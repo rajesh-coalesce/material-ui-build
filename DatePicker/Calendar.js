@@ -52,6 +52,10 @@ var _CalendarActionButtons = require('./CalendarActionButtons');
 
 var _CalendarActionButtons2 = _interopRequireDefault(_CalendarActionButtons);
 
+var _CalendarDay = require('./CalendarDay');
+
+var _CalendarDay2 = _interopRequireDefault(_CalendarDay);
+
 var _CalendarMonth = require('./CalendarMonth');
 
 var _CalendarMonth2 = _interopRequireDefault(_CalendarMonth);
@@ -112,6 +116,12 @@ var Calendar = function (_Component) {
     }, _this.handleClickYear = function (event, year) {
       _this.setSelectedDate(_this.props.utils.setYear(_this.state.selectedDate, year), event);
       _this.handleClickDateDisplayMonthDay();
+    }, _this.handleClickMonth = function (event, month) {
+      var date = _this.props.utils.cloneAsDate(_this.state.selectedDate);
+      date.setDate(1);
+      date.setMonth(month);
+      _this.setSelectedDate(date, event);
+      if (_this.props.onClickDay) _this.props.onClickDay(event, date);
     }, _this.handleClickDateDisplayMonthDay = function () {
       _this.setState({
         displayMonthDay: true
@@ -335,6 +345,9 @@ var Calendar = function (_Component) {
           overflow: 'hidden',
           width: 310
         },
+        monthContainer: {
+          height: 272
+        },
         weekTitle: {
           display: 'flex',
           flexDirection: 'row',
@@ -375,6 +388,7 @@ var Calendar = function (_Component) {
         }),
         !hideCalendarDate && _react2.default.createElement(_DateDisplay2.default, {
           DateTimeFormat: DateTimeFormat,
+          disableDaySelection: this.props.disableDaySelection,
           disableYearSelection: this.props.disableYearSelection,
           onClickMonthDay: this.handleClickDateDisplayMonthDay,
           onClickYear: this.handleClickDateDisplayYear,
@@ -386,7 +400,19 @@ var Calendar = function (_Component) {
         _react2.default.createElement(
           'div',
           { style: prepareStyles(styles.calendar) },
-          this.state.displayMonthDay && _react2.default.createElement(
+          this.state.displayMonthDay && (this.props.disableDaySelection ? _react2.default.createElement(
+            'div',
+            { style: prepareStyles(styles.yearContainer) },
+            _react2.default.createElement(_CalendarMonth2.default, {
+              DateTimeFormat: this.props.DateTimeFormat,
+              locale: this.props.locale,
+              onClickMonth: this.handleClickMonth,
+              selectedDate: this.state.selectedDate,
+              minDate: this.getMinDate(),
+              maxDate: this.getMaxDate(),
+              utils: this.props.utils
+            })
+          ) : _react2.default.createElement(
             'div',
             { style: prepareStyles(styles.calendarContainer) },
             _react2.default.createElement(_CalendarToolbar2.default, {
@@ -411,7 +437,7 @@ var Calendar = function (_Component) {
             _react2.default.createElement(
               _SlideIn2.default,
               { direction: this.state.transitionDirection, style: styles.transitionSlide },
-              _react2.default.createElement(_CalendarMonth2.default, {
+              _react2.default.createElement(_CalendarDay2.default, {
                 DateTimeFormat: DateTimeFormat,
                 locale: locale,
                 displayDate: this.state.displayDate,
@@ -428,7 +454,7 @@ var Calendar = function (_Component) {
                 utils: utils
               })
             )
-          ),
+          )),
           !this.state.displayMonthDay && _react2.default.createElement(
             'div',
             { style: prepareStyles(styles.yearContainer) },
@@ -450,6 +476,7 @@ var Calendar = function (_Component) {
 
 Calendar.defaultProps = {
   DateTimeFormat: _dateUtils.dateTimeFormat,
+  disableDaySelection: false,
   disableYearSelection: false,
   initialDate: new Date(),
   locale: 'en-US',
@@ -462,6 +489,7 @@ Calendar.propTypes = process.env.NODE_ENV !== "production" ? {
   DateTimeFormat: _propTypes2.default.func.isRequired,
   autoOk: _propTypes2.default.bool,
   cancelLabel: _propTypes2.default.node,
+  disableDaySelection: _propTypes2.default.bool,
   disableYearSelection: _propTypes2.default.bool,
   firstDayOfWeek: _propTypes2.default.number,
   hideCalendarDate: _propTypes2.default.bool,

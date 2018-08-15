@@ -7,6 +7,7 @@ exports.defaultUtils = undefined;
 exports.dateTimeFormat = dateTimeFormat;
 exports.getYear = getYear;
 exports.setYear = setYear;
+exports.setMonth = setMonth;
 exports.addDays = addDays;
 exports.addMonths = addMonths;
 exports.addYears = addYears;
@@ -46,6 +47,10 @@ function dateTimeFormat(locale, options) {
       return date.getMonth() + 1 + '/' + date.getDate() + '/' + date.getFullYear();
     } else if (options.year === 'numeric' && options.month === 'long') {
       return monthLongList[date.getMonth()] + ' ' + date.getFullYear();
+    } else if (options.month === 'long') {
+      return monthLongList[date.getMonth()];
+    } else if (options.month === 'short') {
+      return monthList[date.getMonth()];
     } else if (options.weekday === 'narrow') {
       return dayAbbreviation[date.getDay()];
     } else if (options.year === 'numeric') {
@@ -65,6 +70,12 @@ function getYear(d) {
 function setYear(d, year) {
   var newDate = cloneDate(d);
   newDate.setFullYear(year);
+  return newDate;
+}
+
+function setMonth(d, month) {
+  var newDate = cloneDate(d);
+  newDate.setMonth(month);
   return newDate;
 }
 
@@ -193,8 +204,11 @@ function yearDiff(d1, d2) {
 }
 
 var defaultUtils = exports.defaultUtils = {
+  cloneDate: cloneDate,
+  cloneAsDate: cloneAsDate,
   getYear: getYear,
   setYear: setYear,
+  setMonth: setMonth,
   addDays: addDays,
   addMonths: addMonths,
   addYears: addYears,

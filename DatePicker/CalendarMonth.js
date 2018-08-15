@@ -32,34 +32,11 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _dateUtils = require('./dateUtils');
+var _Button = require('./Button');
 
-var _DayButton = require('./DayButton');
-
-var _DayButton2 = _interopRequireDefault(_DayButton);
+var _Button2 = _interopRequireDefault(_Button);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var styles = {
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    fontWeight: 400,
-    height: 228,
-    lineHeight: 2,
-    position: 'relative',
-    textAlign: 'center',
-    MozPaddingStart: 0
-  },
-  week: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    height: 34,
-    marginBottom: 2
-  }
-};
 
 var CalendarMonth = function (_Component) {
   (0, _inherits3.default)(CalendarMonth, _Component);
@@ -75,97 +52,88 @@ var CalendarMonth = function (_Component) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = CalendarMonth.__proto__ || (0, _getPrototypeOf2.default)(CalendarMonth)).call.apply(_ref, [this].concat(args))), _this), _this.handleClickDay = function (event, date) {
-      if (_this.props.onClickDay) {
-        _this.props.onClickDay(event, date);
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = CalendarMonth.__proto__ || (0, _getPrototypeOf2.default)(CalendarMonth)).call.apply(_ref, [this].concat(args))), _this), _this.handleClickMonth = function (event, month) {
+      if (_this.props.onClickMonth) {
+        _this.props.onClickMonth(event, month);
       }
     }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
   }
 
   (0, _createClass3.default)(CalendarMonth, [{
-    key: 'isSelectedDateDisabled',
-    value: function isSelectedDateDisabled() {
-      return this.selectedDateDisabled;
-    }
-  }, {
-    key: 'shouldDisableDate',
-    value: function shouldDisableDate(day) {
-      if (day === null) return false;
-      var disabled = !(0, _dateUtils.isBetweenDates)(day, this.props.minDate, this.props.maxDate);
-      if (!disabled && this.props.shouldDisableDate) disabled = this.props.shouldDisableDate(day);
-
-      return disabled;
-    }
-  }, {
-    key: 'getWeekElements',
-    value: function getWeekElements() {
-      var _this2 = this;
-
-      var weekArray = this.props.utils.getWeekArray(this.props.displayDate, this.props.firstDayOfWeek);
-
-      return weekArray.map(function (week, i) {
-        return _react2.default.createElement(
-          'div',
-          { key: i, style: styles.week },
-          _this2.getDayElements(week, i)
-        );
-      }, this);
-    }
-  }, {
-    key: 'getDayElements',
-    value: function getDayElements(week, i) {
-      var _this3 = this;
-
+    key: 'getMonths',
+    value: function getMonths() {
       var _props = this.props,
           DateTimeFormat = _props.DateTimeFormat,
           locale = _props.locale,
-          selectedDate = _props.selectedDate;
+          selectedDate = _props.selectedDate,
+          utils = _props.utils;
 
 
-      return week.map(function (day, j) {
-        var isSameDate = (0, _dateUtils.isEqualDate)(selectedDate, day);
-        var disabled = _this3.shouldDisableDate(day);
-        var selected = !disabled && isSameDate;
+      var months = [];
 
-        if (isSameDate) {
-          _this3.selectedDateDisabled = disabled;
-        }
+      for (var month = 0; month <= 11; month++) {
+        var monthFormated = new DateTimeFormat(locale, {
+          month: 'short'
+        }).format(utils.setMonth(selectedDate, month));
 
-        return _react2.default.createElement(_DayButton2.default, {
-          DateTimeFormat: DateTimeFormat,
-          locale: locale,
-          date: day,
-          disabled: disabled,
-          key: 'db' + (i + j),
-          onClick: _this3.handleClickDay,
-          selected: selected
-        });
-      }, this);
+        var monthButton = _react2.default.createElement(
+          _Button2.default,
+          {
+            key: 'mb' + month,
+            onClick: this.handleClickMonth,
+            selected: selectedDate.getMonth() === month,
+            value: month,
+            current: month === new Date().getMonth(),
+            style: { flex: '1 0 33.33%', padding: '10' },
+            increaseSelectedFont: false
+          },
+          monthFormated
+        );
+
+        months.push(monthButton);
+      }
+
+      return months;
     }
   }, {
     key: 'render',
     value: function render() {
+      var _context$muiTheme = this.context.muiTheme,
+          prepareStyles = _context$muiTheme.prepareStyles,
+          calendarMonthBackgroundColor = _context$muiTheme.datePicker.calendarMonthBackgroundColor;
+
+
+      var styles = {
+        root: {
+          backgroundColor: calendarMonthBackgroundColor,
+          display: 'flex',
+          justifyContent: 'center',
+          minHeight: '100%',
+          flexWrap: 'wrap'
+        }
+      };
+
       return _react2.default.createElement(
         'div',
-        { style: styles.root },
-        this.getWeekElements()
+        { style: prepareStyles(styles.root) },
+        this.getMonths()
       );
     }
   }]);
   return CalendarMonth;
 }(_react.Component);
 
+CalendarMonth.contextTypes = {
+  muiTheme: _propTypes2.default.object.isRequired
+};
 CalendarMonth.propTypes = process.env.NODE_ENV !== "production" ? {
   DateTimeFormat: _propTypes2.default.func.isRequired,
-  autoOk: _propTypes2.default.bool,
-  displayDate: _propTypes2.default.object.isRequired,
-  firstDayOfWeek: _propTypes2.default.number,
   locale: _propTypes2.default.string.isRequired,
-  maxDate: _propTypes2.default.object,
-  minDate: _propTypes2.default.object,
-  onClickDay: _propTypes2.default.func,
+  maxDate: _propTypes2.default.object.isRequired,
+  minDate: _propTypes2.default.object.isRequired,
+  onClickMonth: _propTypes2.default.func,
   selectedDate: _propTypes2.default.object.isRequired,
-  shouldDisableDate: _propTypes2.default.func,
-  utils: _propTypes2.default.object.isRequired
+  utils: _propTypes2.default.object.isRequired,
+  wordings: _propTypes2.default.object
 } : {};
 exports.default = CalendarMonth;

@@ -142,8 +142,10 @@ function getMuiTheme(muiTheme) {
       calendarTextColor: palette.textColor,
       selectColor: palette.primary2Color,
       selectTextColor: palette.alternateTextColor,
+      calendarMonthBackgroundColor: palette.canvasColor,
       calendarYearBackgroundColor: palette.canvasColor,
-      headerColor: palette.pickerHeaderColor || palette.primary1Color
+      headerColor: palette.pickerHeaderColor || palette.primary1Color,
+      iconColor: _colors.grey600
     },
     dialog: {
       titleFontSize: 22,

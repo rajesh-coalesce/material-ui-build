@@ -166,6 +166,7 @@ var DateDisplay = function (_Component) {
     value: function render() {
       var _props = this.props,
           DateTimeFormat = _props.DateTimeFormat,
+          disableDaySelection = _props.disableDaySelection,
           disableYearSelection = _props.disableYearSelection,
           locale = _props.locale,
           mode = _props.mode,
@@ -174,7 +175,7 @@ var DateDisplay = function (_Component) {
           onClickYear = _props.onClickYear,
           selectedDate = _props.selectedDate,
           style = _props.style,
-          other = (0, _objectWithoutProperties3.default)(_props, ['DateTimeFormat', 'disableYearSelection', 'locale', 'mode', 'monthDaySelected', 'onClickMonthDay', 'onClickYear', 'selectedDate', 'style']);
+          other = (0, _objectWithoutProperties3.default)(_props, ['DateTimeFormat', 'disableDaySelection', 'disableYearSelection', 'locale', 'mode', 'monthDaySelected', 'onClickMonthDay', 'onClickYear', 'selectedDate', 'style']);
       var prepareStyles = this.context.muiTheme.prepareStyles;
 
       var styles = getStyles(this.props, this.context, this.state);
@@ -183,7 +184,9 @@ var DateDisplay = function (_Component) {
         year: 'numeric'
       }).format(selectedDate);
 
-      var dateTime = new DateTimeFormat(locale, {
+      var dateTime = new DateTimeFormat(locale, disableDaySelection ? {
+        month: 'long'
+      } : {
         month: 'short',
         weekday: 'short',
         day: '2-digit'
@@ -221,6 +224,7 @@ var DateDisplay = function (_Component) {
 }(_react.Component);
 
 DateDisplay.defaultProps = {
+  disableDaySelection: false,
   disableYearSelection: false,
   monthDaySelected: true
 };
@@ -229,6 +233,7 @@ DateDisplay.contextTypes = {
 };
 DateDisplay.propTypes = process.env.NODE_ENV !== "production" ? {
   DateTimeFormat: _propTypes2.default.func.isRequired,
+  disableDaySelection: _propTypes2.default.bool,
   disableYearSelection: _propTypes2.default.bool,
   locale: _propTypes2.default.string.isRequired,
   mode: _propTypes2.default.oneOf(['portrait', 'landscape']),

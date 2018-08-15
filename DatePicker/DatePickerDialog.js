@@ -139,6 +139,7 @@ var DatePickerDialog = function (_Component) {
           container = _props.container,
           containerStyle = _props.containerStyle,
           disableYearSelection = _props.disableYearSelection,
+          disableDaySelection = _props.disableDaySelection,
           initialDate = _props.initialDate,
           firstDayOfWeek = _props.firstDayOfWeek,
           locale = _props.locale,
@@ -155,7 +156,7 @@ var DatePickerDialog = function (_Component) {
           style = _props.style,
           animation = _props.animation,
           utils = _props.utils,
-          other = (0, _objectWithoutProperties3.default)(_props, ['DateTimeFormat', 'autoOk', 'cancelLabel', 'container', 'containerStyle', 'disableYearSelection', 'initialDate', 'firstDayOfWeek', 'locale', 'maxDate', 'minDate', 'mode', 'okLabel', 'onAccept', 'onDismiss', 'onShow', 'openToYearSelection', 'shouldDisableDate', 'hideCalendarDate', 'style', 'animation', 'utils']);
+          other = (0, _objectWithoutProperties3.default)(_props, ['DateTimeFormat', 'autoOk', 'cancelLabel', 'container', 'containerStyle', 'disableYearSelection', 'disableDaySelection', 'initialDate', 'firstDayOfWeek', 'locale', 'maxDate', 'minDate', 'mode', 'okLabel', 'onAccept', 'onDismiss', 'onShow', 'openToYearSelection', 'shouldDisableDate', 'hideCalendarDate', 'style', 'animation', 'utils']);
       var open = this.state.open;
 
 
@@ -197,6 +198,7 @@ var DatePickerDialog = function (_Component) {
             DateTimeFormat: DateTimeFormat,
             cancelLabel: cancelLabel,
             disableYearSelection: disableYearSelection,
+            disableDaySelection: disableDaySelection,
             firstDayOfWeek: firstDayOfWeek,
             initialDate: initialDate,
             locale: locale,
@@ -239,6 +241,7 @@ DatePickerDialog.propTypes = process.env.NODE_ENV !== "production" ? {
   cancelLabel: _propTypes2.default.node,
   container: _propTypes2.default.oneOf(['dialog', 'inline']),
   containerStyle: _propTypes2.default.object,
+  disableDaySelection: _propTypes2.default.bool,
   disableYearSelection: _propTypes2.default.bool,
   firstDayOfWeek: _propTypes2.default.number,
   hideCalendarDate: _propTypes2.default.bool,

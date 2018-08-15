@@ -54,6 +54,14 @@ var _TextField = require('../TextField');
 
 var _TextField2 = _interopRequireDefault(_TextField);
 
+var _IconButton = require('../IconButton');
+
+var _IconButton2 = _interopRequireDefault(_IconButton);
+
+var _today = require('../svg-icons/action/today');
+
+var _today2 = _interopRequireDefault(_today);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var DatePicker = function (_Component) {
@@ -71,16 +79,45 @@ var DatePicker = function (_Component) {
     }
 
     return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = DatePicker.__proto__ || (0, _getPrototypeOf2.default)(DatePicker)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-      date: undefined
+      date: undefined,
+      text: ''
+    }, _this.handleText = function (e, text) {
+      if (_this.props.transformText) {
+        text = _this.props.transformText(text, _this.state.text);
+      }
+
+      var date = void 0;
+      if (_this.props.parseText) {
+        date = _this.props.parseText(text);
+      }
+
+      if (date && _this.props.onChange) {
+        _this.props.onChange(null, date);
+      }
+
+      _this.setState({
+        text: text,
+        date: date
+      });
     }, _this.handleAccept = function (date) {
       if (!_this.isControlled()) {
+        var formatDate = _this.props.formatDate || _this.formatDate;
         _this.setState({
-          date: date
+          date: date,
+          text: formatDate(date)
         });
       }
       if (_this.props.onChange) {
         _this.props.onChange(null, date);
       }
+    }, _this.handleBlur = function () {
+      if (_this.props.disableTextEdit || _this.state.date) {
+        return;
+      }
+
+      _this.setState({
+        text: ''
+      });
     }, _this.handleFocus = function (event) {
       event.target.blur();
       if (_this.props.onFocus) {
@@ -113,8 +150,11 @@ var DatePicker = function (_Component) {
   (0, _createClass3.default)(DatePicker, [{
     key: 'componentWillMount',
     value: function componentWillMount() {
+      var date = this.isControlled() ? this.getControlledDate() : this.props.defaultDate;
+      var formatDate = this.props.formatDate || this.formatDate;
       this.setState({
-        date: this.isControlled() ? this.getControlledDate() : this.props.defaultDate
+        date: date,
+        text: date ? formatDate(date) : ''
       });
     }
   }, {
@@ -123,8 +163,10 @@ var DatePicker = function (_Component) {
       if (this.isControlled()) {
         var newDate = this.getControlledDate(nextProps);
         if (!(0, _dateUtils.isEqualDate)(this.state.date, newDate)) {
+          var formatDate = this.props.formatDate || this.formatDate;
           this.setState({
-            date: newDate
+            date: newDate,
+            text: newDate ? formatDate(newDate) : ''
           });
         }
       }
@@ -193,8 +235,9 @@ var DatePicker = function (_Component) {
           defaultDate = _props.defaultDate,
           dialogContainerStyle = _props.dialogContainerStyle,
           disableYearSelection = _props.disableYearSelection,
+          disableTextEdit = _props.disableTextEdit,
+          disableDaySelection = _props.disableDaySelection,
           firstDayOfWeek = _props.firstDayOfWeek,
-          formatDateProp = _props.formatDate,
           locale = _props.locale,
           maxDate = _props.maxDate,
           minDate = _props.minDate,
@@ -210,21 +253,54 @@ var DatePicker = function (_Component) {
           style = _props.style,
           textFieldStyle = _props.textFieldStyle,
           utils = _props.utils,
-          other = (0, _objectWithoutProperties3.default)(_props, ['DateTimeFormat', 'autoOk', 'cancelLabel', 'className', 'container', 'defaultDate', 'dialogContainerStyle', 'disableYearSelection', 'firstDayOfWeek', 'formatDate', 'locale', 'maxDate', 'minDate', 'mode', 'okLabel', 'onDismiss', 'onFocus', 'onShow', 'onClick', 'openToYearSelection', 'shouldDisableDate', 'hideCalendarDate', 'style', 'textFieldStyle', 'utils']);
+          fullWidth = _props.fullWidth,
+          transformText = _props.transformText,
+          parseText = _props.parseText,
+          formatDate = _props.formatDate,
+          other = (0, _objectWithoutProperties3.default)(_props, ['DateTimeFormat', 'autoOk', 'cancelLabel', 'className', 'container', 'defaultDate', 'dialogContainerStyle', 'disableYearSelection', 'disableTextEdit', 'disableDaySelection', 'firstDayOfWeek', 'locale', 'maxDate', 'minDate', 'mode', 'okLabel', 'onDismiss', 'onFocus', 'onShow', 'onClick', 'openToYearSelection', 'shouldDisableDate', 'hideCalendarDate', 'style', 'textFieldStyle', 'utils', 'fullWidth', 'transformText', 'parseText', 'formatDate']);
       var prepareStyles = this.context.muiTheme.prepareStyles;
+      var iconColor = this.context.muiTheme.datePicker.iconColor;
 
-      var formatDate = formatDateProp || this.formatDate;
 
       return _react2.default.createElement(
         'div',
         { className: className, style: prepareStyles((0, _simpleAssign2.default)({}, style)) },
-        _react2.default.createElement(_TextField2.default, (0, _extends3.default)({}, other, {
-          onFocus: this.handleFocus,
-          onClick: this.handleClick,
-          ref: 'input',
-          style: textFieldStyle,
-          value: this.state.date ? formatDate(this.state.date) : ''
-        })),
+        _react2.default.createElement(
+          'div',
+          {
+            style: {
+              display: 'inline-block',
+              position: 'relative',
+              width: fullWidth ? '100%' : undefined
+            }
+          },
+          _react2.default.createElement(_TextField2.default, (0, _extends3.default)({}, other, {
+            onChange: this.handleText,
+            fullWidth: fullWidth,
+            onBlur: this.handleBlur,
+            onFocus: disableTextEdit ? this.handleFocus : undefined,
+            onClick: disableTextEdit ? this.handleClick : undefined,
+            ref: 'input',
+            style: textFieldStyle,
+            value: this.state.text
+          })),
+          !disableTextEdit && _react2.default.createElement(
+            _IconButton2.default,
+            {
+              style: {
+                position: 'absolute',
+                right: 2,
+                top: 10 + (this.props.floatingLabelText ? 24 : 0),
+                padding: 0,
+                width: 28,
+                height: 28
+              },
+              onClick: this.handleClick,
+              tabIndex: -1
+            },
+            _react2.default.createElement(_today2.default, { color: iconColor })
+          )
+        ),
         _react2.default.createElement(_DatePickerDialog2.default, {
           DateTimeFormat: DateTimeFormat,
           autoOk: autoOk,
@@ -232,6 +308,7 @@ var DatePicker = function (_Component) {
           container: container,
           containerStyle: dialogContainerStyle,
           disableYearSelection: disableYearSelection,
+          disableDaySelection: disableDaySelection,
           firstDayOfWeek: firstDayOfWeek,
           initialDate: this.state.dialogDate,
           locale: locale,
@@ -258,6 +335,8 @@ DatePicker.defaultProps = {
   autoOk: false,
   container: 'dialog',
   disabled: false,
+  disableDaySelection: false,
+  disableTextEdit: true,
   disableYearSelection: false,
   firstDayOfWeek: 1,
   hideCalendarDate: false,
@@ -306,6 +385,14 @@ DatePicker.propTypes = process.env.NODE_ENV !== "production" ? {
    */
   dialogContainerStyle: _propTypes2.default.object,
   /**
+   * Disables the day selection in the date picker.
+   */
+  disableDaySelection: _propTypes2.default.bool,
+  /**
+   * Disables text typing.
+   */
+  disableTextEdit: _propTypes2.default.bool,
+  /**
    * Disables the year selection in the date picker.
    */
   disableYearSelection: _propTypes2.default.bool,
@@ -328,6 +415,10 @@ DatePicker.propTypes = process.env.NODE_ENV !== "production" ? {
    * @returns {any} The formatted date.
    */
   formatDate: _propTypes2.default.func,
+  /**
+   * If true, the field receives the property width 100%.
+   */
+  fullWidth: _propTypes2.default.bool,
   /**
    * Hide date display
    */
@@ -386,6 +477,10 @@ DatePicker.propTypes = process.env.NODE_ENV !== "production" ? {
    */
   openToYearSelection: _propTypes2.default.bool,
   /**
+   * Function to parse typed text as a Date.
+   */
+  parseText: _propTypes2.default.func,
+  /**
    * Callback function used to determine if a day's entry should be disabled on the calendar.
    *
    * @param {object} day Date object of a day.
@@ -400,6 +495,10 @@ DatePicker.propTypes = process.env.NODE_ENV !== "production" ? {
    * Override the inline-styles of DatePicker's TextField element.
    */
   textFieldStyle: _propTypes2.default.object,
+  /**
+   * Function to transform typed text (useful for masks).
+   */
+  transformText: _propTypes2.default.func,
   /**
    * This object should contain methods needed to build the calendar system.
    *

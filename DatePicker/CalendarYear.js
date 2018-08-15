@@ -40,9 +40,9 @@ var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _YearButton = require('./YearButton');
+var _Button = require('./Button');
 
-var _YearButton2 = _interopRequireDefault(_YearButton);
+var _Button2 = _interopRequireDefault(_Button);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -105,13 +105,13 @@ var CalendarYear = function (_Component) {
         }).format(utils.setYear(selectedDate, year));
 
         var yearButton = _react2.default.createElement(
-          _YearButton2.default,
+          _Button2.default,
           (0, _extends3.default)({
             key: 'yb' + year,
             onClick: this.handleClickYear,
             selected: selected,
-            year: year,
-            utils: utils
+            value: year,
+            current: year === utils.getYear(new Date())
           }, selectedProps),
           yearFormated
         );
