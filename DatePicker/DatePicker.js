@@ -162,7 +162,7 @@ var DatePicker = function (_Component) {
     value: function componentWillReceiveProps(nextProps) {
       if (this.isControlled()) {
         var newDate = this.getControlledDate(nextProps);
-        if (!(0, _dateUtils.isEqualDate)(this.state.date, newDate)) {
+        if (!(0, _dateUtils.isEqualDate)(this.state.date, newDate) || this.props.locale !== nextProps.locale) {
           var formatDate = this.props.formatDate || this.formatDate;
           this.setState({
             date: newDate,
